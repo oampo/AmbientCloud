@@ -1,0 +1,4 @@
+#! /bin/bash
+# Pass an enter in to skip the rewriting of package.conf with incremented
+# version number
+echo -e '\n' | jitsu deploy
