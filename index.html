@@ -3,11 +3,31 @@
     <head>
         <meta charset="utf-8" />
         <title>SlowCloud</title>
+        <script src="http://code.jquery.com/jquery-1.7.1.min.js"></script>
         <script src="http://connect.soundcloud.com/sdk.js"></script>
         <script src="js/compiled/SlowCloud.js"></script>
         <link rel="stylesheet" href="css/main.css" />
     </head>
     <body>
+        <div id="main">
+            <div id="header">
+                SlowCloud
+            </div>
+            <div id="body">
+                <div id="playlists">
+                    <div class="subheader">
+                        Playlists
+                    </div>
+                    <div class="playlist" id="new-playlist">
+                        <a href="#">New playlist</a>
+                    </div>
+                </div>
+                <div id="tracks" style="display: none;">
+                    <div class="track" id="new-track">
+                        <a href="#">Add track</a>
+                    </div>
+                </div>
+            </div>
     </body>
 </html>
 
