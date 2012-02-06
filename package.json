@@ -1,0 +1,11 @@
+{
+  "scripts": {
+    "start": "server.js"
+  },
+  "version": "0.0.1",
+  "name": "slooowcloud",
+  "subdomain": "slooowcloud",
+  "dependencies": {
+    "node-static": "*"
+  }
+}
