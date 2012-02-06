@@ -1,1 +1,3 @@
 #! /bin/bash
+cat js/Main.js \
+> js/compiled/SlowCloud.js
