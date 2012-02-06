@@ -1,3 +1,4 @@
 #! /bin/bash
 cat js/Main.js \
+    js/Playlist.js \
 > js/compiled/SlowCloud.js
