@@ -6,6 +6,8 @@
         <script src="http://code.jquery.com/jquery-1.7.1.min.js"></script>
         <script src="http://connect.soundcloud.com/sdk.js"></script>
         <script src="js/compiled/SlowCloud.js"></script>
+        <link rel="stylesheet" href="css/museo-sans/stylesheet.css" />
+        <link rel="stylesheet" href="css/museo-slab/stylesheet.css" />
         <link rel="stylesheet" href="css/main.css" />
     </head>
     <body>
@@ -31,7 +33,15 @@
                         </h2>
                     </div>
                     <div class="new" id="new-track">
-                        Add track
+                        <div class="label">
+                            Add track
+                        </div>
+                        <div class="input" style="display: none;">
+                            <form action="#">
+                                <input type="text" placeholder="http://soundcloud.com/sonic-pieces/nils-frahm-ambre" name="track-url" />
+                                <input type="submit" style="position: absolute; left: -9999px; width: 1px; height: 1px;"/>
+                            </form>
+                        </div>
                     </div>
                     <div class="back" id="back-to-playlists">
                         Back

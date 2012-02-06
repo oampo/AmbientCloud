@@ -2,10 +2,11 @@ var TrackView = function(app) {
     this.app = app;
     this.div = $('#tracks');
 
-    this.newTrackDiv = $('#new-track');
-    this.backDiv = $('#back-to-playlists');
+    $('#back-to-playlists').click(this.onBack.bind(this));
 
-    this.backDiv.click(this.onBack.bind(this));
+    $('#new-track').click(this.showTrackInput.bind(this));
+    $('#new-track input[type="text"]').blur(this.hideTrackInput.bind(this));
+    $('#new-track form').submit(this.onNewTrackSubmit.bind(this));
 };
 
 TrackView.prototype.show = function() {
@@ -20,11 +21,29 @@ TrackView.prototype.update = function(tracks) {
     $('.track').remove();
     for (var i=0; i<tracks.length; i++) {
         var element = tracks[i].createElement();
-        this.newTrackDiv.before(element);
+        $("#new-track").before(element);
     }
 };
 
 TrackView.prototype.onBack = function() {
     this.div.hide();
+    this.app.currentPlaylist = null;
     this.app.playlistView.show();
+};
+
+TrackView.prototype.showTrackInput = function() {
+    $('#new-track .label').slideUp();
+    $('#new-track .input').slideDown();
+    $('#new-track input[type="text"]').focus();
+};
+
+TrackView.prototype.hideTrackInput = function() {
+    $("#new-track .label").slideDown();
+    $("#new-track .input").slideUp();
+    $("#new-track input").val("");
+    
+};
+
+TrackView.prototype.onNewTrackSubmit = function() {
+    this.app.currentPlaylist.addTrackFromURL($("#new-track input").val());
 };

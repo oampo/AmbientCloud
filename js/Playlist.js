@@ -11,9 +11,13 @@ Playlist.prototype.createElement = function() {
     var div = document.createElement('div');
     div.className = 'playlist';
     div.innerHTML = this.playlist.title;
-    $(div).click(this.onClick.bind(this));
     return div;
 };
 
-Playlist.prototype.onClick = function() {
+Playlist.prototype.addTrackFromURL = function(url) {
+    SC.get('/resolve', {url: url}, this.addTrack.bind(this));
+};
+
+Playlist.prototype.addTrack = function(track) {
+    console.log(track);
 };

@@ -7,6 +7,7 @@ var SlowCloud = function() {
     SC.connect(this.onConnect.bind(this));
 
     this.playlists = [];
+    this.currentPlaylist = null;
 
     this.playlistView = new PlaylistView(this);
     this.trackView = new TrackView(this);

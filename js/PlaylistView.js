@@ -24,6 +24,7 @@ PlaylistView.prototype.update = function(playlists) {
 
 PlaylistView.prototype.onClick = function(playlist) {
     this.hide();
+    this.app.currentPlaylist = playlist;
     this.app.trackView.update(playlist.tracks);
     this.app.trackView.show();
 };
