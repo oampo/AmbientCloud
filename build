@@ -1,4 +1,7 @@
 #! /bin/bash
 cat js/Main.js \
     js/Playlist.js \
+    js/Track.js \
+    js/PlaylistView.js \
+    js/TrackView.js \
 > js/compiled/SlowCloud.js

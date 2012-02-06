@@ -7,6 +7,9 @@ var SlowCloud = function() {
     SC.connect(this.onConnect.bind(this));
 
     this.playlists = [];
+
+    this.playlistView = new PlaylistView(this);
+    this.trackView = new TrackView(this);
 };
 
 SlowCloud.prototype.onConnect = function() {
@@ -22,15 +25,7 @@ SlowCloud.prototype.onGetPlaylists = function(playlists) {
     for (var i=0; i<playlists.length; i++) {
         this.playlists.push(new Playlist(playlists[i]));
     }
-    this.updatePlaylistView();
-};
-
-SlowCloud.prototype.updatePlaylistView = function() {
-    var newPlaylistDiv = $('#new-playlist');
-    for (var i=0; i<this.playlists.length; i++) {
-        var element = this.playlists[i].createElement();
-        newPlaylistDiv.before(element);
-    }
+    this.playlistView.update(this.playlists);
 };
 
 window.onload = function() {
