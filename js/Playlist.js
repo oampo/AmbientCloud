@@ -11,8 +11,13 @@ Playlist.prototype.createElement = function() {
     return div;
 };
 
-Playlist.prototype.addTrackFromURL = function(url) {
-    SC.get('/resolve', {url: url}, this.addTrack.bind(this));
+Playlist.prototype.addTrackFromURL = function(url, callback) {
+    SC.get('/resolve', {url: url}, function(callback, track) {
+        this.addTrack(track);
+        if (callback) {
+            callback();
+        }
+    }.bind(this, callback));
 };
 
 Playlist.prototype.addTrack = function(track) {

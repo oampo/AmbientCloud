@@ -17,10 +17,11 @@ TrackView.prototype.hide = function() {
     this.div.slideUp();
 };
 
-TrackView.prototype.update = function(tracks) {
+TrackView.prototype.update = function() {
     $('.track').remove();
-    for (var i=0; i<tracks.length; i++) {
-        var element = tracks[i].createElement();
+    for (var i=0; i<this.app.currentPlaylist.tracks.length; i++) {
+        var track = this.app.currentPlaylist.tracks[i];
+        var element = track.createElement();
         $("#new-track").before(element);
     }
 };
@@ -45,7 +46,8 @@ TrackView.prototype.hideTrackInput = function() {
 };
 
 TrackView.prototype.onNewTrackSubmit = function() {
-    this.app.currentPlaylist.addTrackFromURL($("#new-track input").val());
+    this.app.currentPlaylist.addTrackFromURL($("#new-track input").val(),
+                                             this.update.bind(this));
     this.hideTrackInput();
     return false;
 };

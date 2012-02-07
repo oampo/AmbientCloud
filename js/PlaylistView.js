@@ -29,6 +29,7 @@ PlaylistView.prototype.update = function() {
 PlaylistView.prototype.onClick = function(playlist) {
     this.hide();
     this.app.currentPlaylist = playlist;
+    $("#tracks .subheader").text(playlist.title);
     this.app.trackView.update(playlist.tracks);
     this.app.trackView.show();
 };
@@ -47,8 +48,10 @@ PlaylistView.prototype.hidePlaylistInput = function() {
 };
 
 PlaylistView.prototype.onNewPlaylistSubmit = function() {
-    this.app.addPlaylist(new Playlist($("#new-playlist input").val()));
+    var playlist = new Playlist($("#new-playlist input").val());
+    this.app.addPlaylist(playlist);
     this.update();
     this.hidePlaylistInput();
+    this.onClick(playlist);
     return false;
 };

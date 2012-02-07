@@ -30,8 +30,13 @@ Playlist.prototype.createElement = function() {
     return div;
 };
 
-Playlist.prototype.addTrackFromURL = function(url) {
-    SC.get('/resolve', {url: url}, this.addTrack.bind(this));
+Playlist.prototype.addTrackFromURL = function(url, callback) {
+    SC.get('/resolve', {url: url}, function(callback, track) {
+        this.addTrack(track);
+        if (callback) {
+            callback();
+        }
+    }.bind(this, callback));
 };
 
 Playlist.prototype.addTrack = function(track) {
@@ -78,6 +83,7 @@ PlaylistView.prototype.update = function() {
 PlaylistView.prototype.onClick = function(playlist) {
     this.hide();
     this.app.currentPlaylist = playlist;
+    $("#tracks .subheader").text(playlist.title);
     this.app.trackView.update(playlist.tracks);
     this.app.trackView.show();
 };
@@ -96,9 +102,11 @@ PlaylistView.prototype.hidePlaylistInput = function() {
 };
 
 PlaylistView.prototype.onNewPlaylistSubmit = function() {
-    this.app.addPlaylist(new Playlist($("#new-playlist input").val()));
+    var playlist = new Playlist($("#new-playlist input").val());
+    this.app.addPlaylist(playlist);
     this.update();
     this.hidePlaylistInput();
+    this.onClick(playlist);
     return false;
 };
 var TrackView = function(app) {
@@ -120,10 +128,11 @@ TrackView.prototype.hide = function() {
     this.div.slideUp();
 };
 
-TrackView.prototype.update = function(tracks) {
+TrackView.prototype.update = function() {
     $('.track').remove();
-    for (var i=0; i<tracks.length; i++) {
-        var element = tracks[i].createElement();
+    for (var i=0; i<this.app.currentPlaylist.tracks.length; i++) {
+        var track = this.app.currentPlaylist.tracks[i];
+        var element = track.createElement();
         $("#new-track").before(element);
     }
 };
@@ -148,6 +157,8 @@ TrackView.prototype.hideTrackInput = function() {
 };
 
 TrackView.prototype.onNewTrackSubmit = function() {
-    this.app.currentPlaylist.addTrackFromURL($("#new-track input").val());
+    this.app.currentPlaylist.addTrackFromURL($("#new-track input").val(),
+                                             this.update.bind(this));
+    this.hideTrackInput();
     return false;
 };
