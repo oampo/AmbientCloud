@@ -12,26 +12,26 @@
 
         <!-- ICanHaz templates -->
         <script id="playlist" type="text/html">
-            <div class="playlist">
+            <div class="playlist" id="{{ id }}">
                 <div class="name">
                     {{ title }}
                 </div>
                 <div class="controls">
                     <button class="rename-playlist rename">R</button>
-                    <button class="delete-playlist delete">X</button>
+                    <button class="remove-playlist remove">X</button>
                 </div>
             </div>
         </script>
 
         <script id="track" type="text/html">
-            <div class="track">
+            <div class="track"  id="{{ id }}">
                 <div class="name">
                     {{ title }} by {{ artist }}
                 </div>
                 <div class="controls">
                     <button class="up-track">U</button>
                     <button class="down-track">D</button>
-                    <button class="delete-track delete">X</button>
+                    <button class="remove-track remove">X</button>
                 </div>
             </div>
         </script>

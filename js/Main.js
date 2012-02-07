@@ -12,7 +12,15 @@ var SlowCloud = function() {
 
 SlowCloud.prototype.addPlaylist = function(playlist) {
     this.playlists.push(playlist);
+    this.playlistView.addPlaylist(playlist);
 };
+
+SlowCloud.prototype.removePlaylist = function(playlist) {
+    var index = this.playlists.indexOf(playlist);
+    this.playlists.splice(index, 1);
+    this.playlistView.removePlaylist(playlist);
+};
+    
 
 window.onload = function() {
     window.app = new SlowCloud();

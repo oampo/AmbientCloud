@@ -554,42 +554,60 @@ var SlowCloud = function() {
 
 SlowCloud.prototype.addPlaylist = function(playlist) {
     this.playlists.push(playlist);
+    this.playlistView.addPlaylist(playlist);
 };
+
+SlowCloud.prototype.removePlaylist = function(playlist) {
+    var index = this.playlists.indexOf(playlist);
+    this.playlists.splice(index, 1);
+    this.playlistView.removePlaylist(playlist);
+};
+    
 
 window.onload = function() {
     window.app = new SlowCloud();
 };
-var Playlist = function(title) {
+var Playlist = function(app, title) {
+    this.app = app;
     this.title = title;
 
     this.tracks = [];
+    this.id = uid();
 };
 
 Playlist.prototype.createElement = function() {
-    var data = {title: this.title};
+    var data = {title: this.title,
+                id: this.id};
     var div = ich.playlist(data);
     return div;
 };
 
-Playlist.prototype.addTrackFromURL = function(url, callback) {
-    SC.get('/resolve', {url: url}, function(callback, track) {
-        this.addTrack(track);
-        if (callback) {
-            callback();
-        }
-    }.bind(this, callback));
+Playlist.prototype.addTrackFromURL = function(url) {
+    SC.get('/resolve', {url: url}, this.addTrack.bind(this));
 };
 
 Playlist.prototype.addTrack = function(track) {
-    this.tracks.push(new Track(track));
+    var track = new Track(this.app, track);
+    this.tracks.push(track);
+    this.app.trackView.addTrack(track);
 };
-var Track = function(track) {
+
+Playlist.prototype.removeTrack = function(track) {
+    var index = this.tracks.indexOf(track);
+    this.tracks.splice(index, 1);
+    this.app.trackView.removeTrack(track);
+};
+var Track = function(app, track) {
+    this.app = app;
     this.track = track;
+
+    this.id = this.track.id;
 };
 
 Track.prototype.createElement = function() {
     var data = {title: this.track.title,
-                artist: this.track.user.username};
+                artist: this.track.user.username,
+                id: this.id};
     var div = ich.track(data);
     return div;
 };
@@ -610,23 +628,34 @@ PlaylistView.prototype.hide = function() {
     this.div.slideUp();
 };
 
-PlaylistView.prototype.update = function() {
+PlaylistView.prototype.clear = function() {
     $('.playlist').remove();
-    var newPlaylistDiv = $('#new-playlist');
-    for (var i=0; i<this.app.playlists.length; i++) {
-        var playlist = this.app.playlists[i];
-        var element = playlist.createElement();
-        newPlaylistDiv.before(element);
-        $(element).click(this.onClick.bind(this, playlist));
-    }
 };
 
-PlaylistView.prototype.onClick = function(playlist) {
+PlaylistView.prototype.addPlaylist = function(playlist) {
+    var element = playlist.createElement();
+    $('#new-playlist').before(element);
+    $(element).click(this.onEnter.bind(this, playlist));
+    $(element).find('.remove-playlist').click(this.onRemove.bind(this,
+                                                                 playlist));
+};
+
+PlaylistView.prototype.removePlaylist = function(playlist) {
+    $('#' + playlist.id).slideUp('normal', function() {
+        $(this).remove();
+    });
+};
+
+PlaylistView.prototype.onEnter = function(playlist) {
     this.hide();
     this.app.currentPlaylist = playlist;
-    $("#tracks .subheader").text(playlist.title);
-    this.app.trackView.update(playlist.tracks);
+    this.app.trackView.set(playlist);
     this.app.trackView.show();
+};
+
+PlaylistView.prototype.onRemove = function(playlist) {
+    this.app.removePlaylist(playlist);
+    return false;
 };
 
 PlaylistView.prototype.showPlaylistInput = function() {
@@ -643,11 +672,10 @@ PlaylistView.prototype.hidePlaylistInput = function() {
 };
 
 PlaylistView.prototype.onNewPlaylistSubmit = function() {
-    var playlist = new Playlist($("#new-playlist input").val());
+    var playlist = new Playlist(app, $("#new-playlist input").val());
     this.app.addPlaylist(playlist);
-    this.update();
     this.hidePlaylistInput();
-    this.onClick(playlist);
+    this.onEnter(playlist);
     return false;
 };
 var TrackView = function(app) {
@@ -669,12 +697,27 @@ TrackView.prototype.hide = function() {
     this.div.slideUp();
 };
 
-TrackView.prototype.update = function() {
+TrackView.prototype.addTrack = function(track) {
+    var element = track.createElement();
+    $("#new-track").before(element);
+};
+
+TrackView.prototype.removeTrack = function(track) {
+    $('#' + track.id).slideUp('normal', function() {
+        $(this).remove();
+    });
+};
+
+TrackView.prototype.clear = function() {
     $('.track').remove();
-    for (var i=0; i<this.app.currentPlaylist.tracks.length; i++) {
-        var track = this.app.currentPlaylist.tracks[i];
-        var element = track.createElement();
-        $("#new-track").before(element);
+};
+
+TrackView.prototype.set = function(playlist) {
+    this.clear();
+    $('#tracks .subheading').text(playlist.title);
+    for (var i=0; i<playlist.tracks.length; i++) {
+        var track = playlist.tracks[i];
+        this.addTrack(track);
     }
 };
 
@@ -694,12 +737,15 @@ TrackView.prototype.hideTrackInput = function() {
     $("#new-track .label").slideDown();
     $("#new-track .input").slideUp();
     $("#new-track input").val("");
-    
 };
 
 TrackView.prototype.onNewTrackSubmit = function() {
-    this.app.currentPlaylist.addTrackFromURL($("#new-track input").val(),
-                                             this.update.bind(this));
+    this.app.currentPlaylist.addTrackFromURL($("#new-track input").val());
     this.hideTrackInput();
     return false;
 };
+window.UID = 0;
+function uid() {
+    window.UID += 1;
+    return window.UID;
+}

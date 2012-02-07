@@ -15,23 +15,34 @@ PlaylistView.prototype.hide = function() {
     this.div.slideUp();
 };
 
-PlaylistView.prototype.update = function() {
+PlaylistView.prototype.clear = function() {
     $('.playlist').remove();
-    var newPlaylistDiv = $('#new-playlist');
-    for (var i=0; i<this.app.playlists.length; i++) {
-        var playlist = this.app.playlists[i];
-        var element = playlist.createElement();
-        newPlaylistDiv.before(element);
-        $(element).click(this.onClick.bind(this, playlist));
-    }
 };
 
-PlaylistView.prototype.onClick = function(playlist) {
+PlaylistView.prototype.addPlaylist = function(playlist) {
+    var element = playlist.createElement();
+    $('#new-playlist').before(element);
+    $(element).click(this.onEnter.bind(this, playlist));
+    $(element).find('.remove-playlist').click(this.onRemove.bind(this,
+                                                                 playlist));
+};
+
+PlaylistView.prototype.removePlaylist = function(playlist) {
+    $('#' + playlist.id).slideUp('normal', function() {
+        $(this).remove();
+    });
+};
+
+PlaylistView.prototype.onEnter = function(playlist) {
     this.hide();
     this.app.currentPlaylist = playlist;
-    $("#tracks .subheader").text(playlist.title);
-    this.app.trackView.update(playlist.tracks);
+    this.app.trackView.set(playlist);
     this.app.trackView.show();
+};
+
+PlaylistView.prototype.onRemove = function(playlist) {
+    this.app.removePlaylist(playlist);
+    return false;
 };
 
 PlaylistView.prototype.showPlaylistInput = function() {
@@ -48,10 +59,9 @@ PlaylistView.prototype.hidePlaylistInput = function() {
 };
 
 PlaylistView.prototype.onNewPlaylistSubmit = function() {
-    var playlist = new Playlist($("#new-playlist input").val());
+    var playlist = new Playlist(app, $("#new-playlist input").val());
     this.app.addPlaylist(playlist);
-    this.update();
     this.hidePlaylistInput();
-    this.onClick(playlist);
+    this.onEnter(playlist);
     return false;
 };

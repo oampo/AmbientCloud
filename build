@@ -5,4 +5,5 @@ cat js/ICanHaz.js/ICanHaz.js \
     js/Track.js \
     js/PlaylistView.js \
     js/TrackView.js \
+    js/UID.js \
 > js/compiled/SlowCloud.js
