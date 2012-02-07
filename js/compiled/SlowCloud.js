@@ -1,10 +1,7 @@
 var SlowCloud = function() {
     SC.initialize({
         client_id: '382b4cea1549fc6ed4682acaf0e0fe65',
-        redirect_uri: 'http://slooowcloud.nodejitsu.com/callback.html',
     });
-
-    SC.connect(this.onConnect.bind(this));
 
     this.playlists = [];
     this.currentPlaylist = null;
@@ -13,38 +10,23 @@ var SlowCloud = function() {
     this.trackView = new TrackView(this);
 };
 
-SlowCloud.prototype.onConnect = function() {
-    this.getPlaylists();
-};
-
-SlowCloud.prototype.getPlaylists = function() {
-    SC.get('/me/playlists', this.onGetPlaylists.bind(this));
-};
-
-SlowCloud.prototype.onGetPlaylists = function(playlists) {
-    this.playlists = [];
-    for (var i=0; i<playlists.length; i++) {
-        this.playlists.push(new Playlist(playlists[i]));
-    }
-    this.playlistView.update(this.playlists);
+SlowCloud.prototype.addPlaylist = function(playlist) {
+    this.playlists.push(playlist);
 };
 
 window.onload = function() {
     window.app = new SlowCloud();
 };
-var Playlist = function(playlist) {
-    this.playlist = playlist;
+var Playlist = function(title) {
+    this.title = title;
 
     this.tracks = [];
-    for (var i=0; i<this.playlist.tracks.length; i++) {
-        this.tracks.push(new Track(this.playlist.tracks[i]));
-    }
 };
 
 Playlist.prototype.createElement = function() {
     var div = document.createElement('div');
     div.className = 'playlist';
-    div.innerHTML = this.playlist.title;
+    div.innerHTML = this.title;
     return div;
 };
 
@@ -53,7 +35,7 @@ Playlist.prototype.addTrackFromURL = function(url) {
 };
 
 Playlist.prototype.addTrack = function(track) {
-    console.log(track);
+    this.tracks.push(new Track(track));
 };
 var Track = function(track) {
     this.track = track;
@@ -68,6 +50,10 @@ Track.prototype.createElement = function() {
 var PlaylistView = function(app) {
     this.app = app;
     this.div = $('#playlists');
+
+    $('#new-playlist').click(this.showPlaylistInput.bind(this));
+    $('#new-playlist input[type="text"]').blur(this.hidePlaylistInput.bind(this));
+    $('#new-playlist form').submit(this.onNewPlaylistSubmit.bind(this));
 };
 
 PlaylistView.prototype.show = function() {
@@ -78,11 +64,11 @@ PlaylistView.prototype.hide = function() {
     this.div.slideUp();
 };
 
-PlaylistView.prototype.update = function(playlists) {
+PlaylistView.prototype.update = function() {
     $('.playlist').remove();
     var newPlaylistDiv = $('#new-playlist');
-    for (var i=0; i<playlists.length; i++) {
-        var playlist = playlists[i];
+    for (var i=0; i<this.app.playlists.length; i++) {
+        var playlist = this.app.playlists[i];
         var element = playlist.createElement();
         newPlaylistDiv.before(element);
         $(element).click(this.onClick.bind(this, playlist));
@@ -94,6 +80,26 @@ PlaylistView.prototype.onClick = function(playlist) {
     this.app.currentPlaylist = playlist;
     this.app.trackView.update(playlist.tracks);
     this.app.trackView.show();
+};
+
+PlaylistView.prototype.showPlaylistInput = function() {
+    $('#new-playlist .label').slideUp();
+    $('#new-playlist .input').slideDown();
+    $('#new-playlist input[type="text"]').focus();
+};
+
+PlaylistView.prototype.hidePlaylistInput = function() {
+    $("#new-playlist .label").slideDown();
+    $("#new-playlist .input").slideUp();
+    $("#new-playlist input").val("");
+
+};
+
+PlaylistView.prototype.onNewPlaylistSubmit = function() {
+    this.app.addPlaylist(new Playlist($("#new-playlist input").val()));
+    this.update();
+    this.hidePlaylistInput();
+    return false;
 };
 var TrackView = function(app) {
     this.app = app;
@@ -143,4 +149,5 @@ TrackView.prototype.hideTrackInput = function() {
 
 TrackView.prototype.onNewTrackSubmit = function() {
     this.app.currentPlaylist.addTrackFromURL($("#new-track input").val());
+    return false;
 };

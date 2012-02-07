@@ -1,16 +1,13 @@
-var Playlist = function(playlist) {
-    this.playlist = playlist;
+var Playlist = function(title) {
+    this.title = title;
 
     this.tracks = [];
-    for (var i=0; i<this.playlist.tracks.length; i++) {
-        this.tracks.push(new Track(this.playlist.tracks[i]));
-    }
 };
 
 Playlist.prototype.createElement = function() {
     var div = document.createElement('div');
     div.className = 'playlist';
-    div.innerHTML = this.playlist.title;
+    div.innerHTML = this.title;
     return div;
 };
 
@@ -19,5 +16,5 @@ Playlist.prototype.addTrackFromURL = function(url) {
 };
 
 Playlist.prototype.addTrack = function(track) {
-    console.log(track);
+    this.tracks.push(new Track(track));
 };

@@ -23,7 +23,15 @@
                         </h2>
                     </div>
                     <div class="new" id="new-playlist">
-                        New playlist
+                        <div class="label">
+                            New Playlist 
+                        </div>
+                        <div class="input" style="display: none;">
+                            <form action="#" method="post">
+                                <input type="text" placeholder="My Playlist" name="playlist-name" />
+                                <input type="submit" style="position: absolute; left: -9999px; width: 1px; height: 1px;"/>
+                            </form>
+                        </div>
                     </div>
                 </div>
                 <div id="tracks" style="display: none;">
@@ -37,8 +45,8 @@
                             Add track
                         </div>
                         <div class="input" style="display: none;">
-                            <form action="#">
-                                <input type="text" placeholder="http://soundcloud.com/sonic-pieces/nils-frahm-ambre" name="track-url" />
+                            <form action="#" method="post">
+                                <input type="text" placeholder="http://soundcloud.com/artist/track" name="track-url" />
                                 <input type="submit" style="position: absolute; left: -9999px; width: 1px; height: 1px;"/>
                             </form>
                         </div>

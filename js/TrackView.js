@@ -46,4 +46,6 @@ TrackView.prototype.hideTrackInput = function() {
 
 TrackView.prototype.onNewTrackSubmit = function() {
     this.app.currentPlaylist.addTrackFromURL($("#new-track input").val());
+    this.hideTrackInput();
+    return false;
 };

@@ -2,7 +2,7 @@
   "scripts": {
     "start": "server.js"
   },
-  "version": "0.0.1-68",
+  "version": "0.0.1-79",
   "name": "slooowcloud",
   "subdomain": "slooowcloud",
   "dependencies": {
