@@ -17,6 +17,11 @@ h1 {
     font-family: "MuseoSlab500";
 }
 
+button {
+    background-color: #FFFFFF;
+    border: 1px solid #000;
+}
+
 input[type="text"] {
     border: 0;
     font-size: 1.5em;
@@ -35,6 +40,17 @@ div.subheader, div.playlist, div.track, div.new, div.back {
     padding: 1em 1em 0 1em;
     border-bottom: 1px solid #000;
     font-size: 1.5em;
+}
+
+div.controls {
+    width: 20%;
+    float: left;
+    text-align: right;
+}
+
+div.name {
+    width: 80%;
+    float: left;
 }
 
 div#header {
