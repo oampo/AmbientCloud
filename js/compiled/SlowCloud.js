@@ -700,6 +700,9 @@ TrackView.prototype.hide = function() {
 TrackView.prototype.addTrack = function(track) {
     var element = track.createElement();
     $("#new-track").before(element);
+    $(element).click(this.onEnter.bind(this, track));
+    $(element).find('.remove-track').click(this.onRemove.bind(this,
+                                                              track));
 };
 
 TrackView.prototype.removeTrack = function(track) {
@@ -719,6 +722,14 @@ TrackView.prototype.set = function(playlist) {
         var track = playlist.tracks[i];
         this.addTrack(track);
     }
+};
+
+TrackView.prototype.onEnter = function(playlist) {
+};
+
+TrackView.prototype.onRemove = function(track) {
+    this.app.currentPlaylist.removeTrack(track);
+    return false;
 };
 
 TrackView.prototype.onBack = function() {
