@@ -1,5 +1,6 @@
 #! /bin/bash
-cat js/Main.js \
+cat js/ICanHaz.js/ICanHaz.js \
+    js/Main.js \
     js/Playlist.js \
     js/Track.js \
     js/PlaylistView.js \

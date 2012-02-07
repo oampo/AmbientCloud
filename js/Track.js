@@ -3,8 +3,8 @@ var Track = function(track) {
 };
 
 Track.prototype.createElement = function() {
-    var div = document.createElement('div');
-    div.className = 'track';
-    div.innerHTML = this.track.title + " by " + this.track.user.username;
+    var data = {title: this.track.title,
+                artist: this.track.user.username};
+    var div = ich.track(data);
     return div;
 };

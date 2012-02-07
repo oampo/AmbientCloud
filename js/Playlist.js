@@ -5,9 +5,8 @@ var Playlist = function(title) {
 };
 
 Playlist.prototype.createElement = function() {
-    var div = document.createElement('div');
-    div.className = 'playlist';
-    div.innerHTML = this.title;
+    var data = {title: this.title};
+    var div = ich.playlist(data);
     return div;
 };
 
