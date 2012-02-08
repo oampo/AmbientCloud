@@ -34,8 +34,8 @@ SlowCloud.prototype.save = function() {
         var reducedPlaylist = {};
         reducedPlaylist.title = playlist.title;
         reducedPlaylist.tracks = [];
-        for (var i=0; i<playlist.tracks.length; i++) {
-            var track = playlist.tracks[i];
+        for (var j=0; j<playlist.tracks.length; j++) {
+            var track = playlist.tracks[j];
             reducedPlaylist.tracks.push(track.track.permalink_url);
         }
         playlists.push(reducedPlaylist);
