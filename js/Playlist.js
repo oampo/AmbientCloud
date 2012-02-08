@@ -24,6 +24,8 @@ Playlist.prototype.createElement = function() {
 /**
  * Adds a track to the playlist after retreiving the data info from SoundCloud.
  * Asynchronous.
+ *
+ * TODO: Should handle errors.
  */
 Playlist.prototype.addTrackFromURL = function(url) {
     SC.get('/resolve', {url: url}, this.addTrack.bind(this));
