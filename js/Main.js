@@ -15,12 +15,14 @@ var SlowCloud = function() {
 SlowCloud.prototype.addPlaylist = function(playlist) {
     this.playlists.push(playlist);
     this.playlistView.addPlaylist(playlist);
+    this.save();
 };
 
 SlowCloud.prototype.removePlaylist = function(playlist) {
     var index = this.playlists.indexOf(playlist);
     this.playlists.splice(index, 1);
     this.playlistView.removePlaylist(playlist);
+    this.save();
 };
 
 SlowCloud.prototype.save = function() {

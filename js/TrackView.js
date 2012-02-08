@@ -8,7 +8,14 @@ var TrackView = function(app) {
     $('#new-track input[type="text"]').blur(this.hideTrackInput.bind(this));
     $('#new-track form').submit(this.onNewTrackSubmit.bind(this));
 
-    this.div.sortable({items: '.track'});
+    this.dragStart = null;
+    this.div.sortable({
+        items: '.track',
+        axis: 'y',
+        distance: 15,
+        start: this.onSortStart.bind(this),
+        stop: this.onSortStop.bind(this)
+    });
 };
 
 TrackView.prototype.show = function() {
@@ -52,6 +59,16 @@ TrackView.prototype.onEnter = function(playlist) {
 TrackView.prototype.onRemove = function(track) {
     this.app.currentPlaylist.removeTrack(track);
     return false;
+};
+
+TrackView.prototype.onSortStart = function(event, ui) {
+    this.dragStart = $('.track').index(ui.item);
+};
+
+TrackView.prototype.onSortStop = function(event, ui) {
+    var dragEnd = $('.track').index(ui.item);
+    this.app.currentPlaylist.moveTrack(this.dragStart, dragEnd);
+    this.dragStart = null;
 };
 
 TrackView.prototype.onBack = function() {

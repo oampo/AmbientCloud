@@ -557,12 +557,14 @@ var SlowCloud = function() {
 SlowCloud.prototype.addPlaylist = function(playlist) {
     this.playlists.push(playlist);
     this.playlistView.addPlaylist(playlist);
+    this.save();
 };
 
 SlowCloud.prototype.removePlaylist = function(playlist) {
     var index = this.playlists.indexOf(playlist);
     this.playlists.splice(index, 1);
     this.playlistView.removePlaylist(playlist);
+    this.save();
 };
 
 SlowCloud.prototype.save = function() {
@@ -626,13 +628,23 @@ Playlist.prototype.addTrack = function(track) {
     var track = new Track(this.app, track);
     this.tracks.push(track);
     this.app.trackView.addTrack(track);
+    this.app.save();
 };
 
 Playlist.prototype.removeTrack = function(track) {
     var index = this.tracks.indexOf(track);
     this.tracks.splice(index, 1);
     this.app.trackView.removeTrack(track);
+    this.app.save();
 };
+
+Playlist.prototype.moveTrack = function(oldIndex, newIndex) {
+    console.log(oldIndex, newIndex);
+    var track = this.tracks.splice(oldIndex, 1)[0];
+    this.tracks.splice(newIndex, 0, track);
+    this.app.save();
+};
+
 var Track = function(app, track) {
     this.app = app;
     this.track = track;
@@ -724,7 +736,14 @@ var TrackView = function(app) {
     $('#new-track input[type="text"]').blur(this.hideTrackInput.bind(this));
     $('#new-track form').submit(this.onNewTrackSubmit.bind(this));
 
-    this.div.sortable({items: '.track'});
+    this.dragStart = null;
+    this.div.sortable({
+        items: '.track',
+        axis: 'y',
+        distance: 15,
+        start: this.onSortStart.bind(this),
+        stop: this.onSortStop.bind(this)
+    });
 };
 
 TrackView.prototype.show = function() {
@@ -763,11 +782,22 @@ TrackView.prototype.set = function(playlist) {
 };
 
 TrackView.prototype.onEnter = function(playlist) {
+    console.log("Play");
 };
 
 TrackView.prototype.onRemove = function(track) {
     this.app.currentPlaylist.removeTrack(track);
     return false;
+};
+
+TrackView.prototype.onSortStart = function(event, ui) {
+    this.dragStart = $('.track').index(ui.item);
+};
+
+TrackView.prototype.onSortStop = function(event, ui) {
+    var dragEnd = $('.track').index(ui.item);
+    this.app.currentPlaylist.moveTrack(this.dragStart, dragEnd);
+    this.dragStart = null;
 };
 
 TrackView.prototype.onBack = function() {
