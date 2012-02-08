@@ -550,6 +550,8 @@ var SlowCloud = function() {
 
     this.playlistView = new PlaylistView(this);
     this.trackView = new TrackView(this);
+
+    this.load();
 };
 
 SlowCloud.prototype.addPlaylist = function(playlist) {
@@ -561,6 +563,40 @@ SlowCloud.prototype.removePlaylist = function(playlist) {
     var index = this.playlists.indexOf(playlist);
     this.playlists.splice(index, 1);
     this.playlistView.removePlaylist(playlist);
+};
+
+SlowCloud.prototype.save = function() {
+    // Store simplified version, and recreate when we reload, as data
+    // may have changed
+    var playlists = [];
+    for (var i=0; i<this.playlists.length; i++) {
+        var playlist = this.playlists[i];
+        var reducedPlaylist = {};
+        reducedPlaylist.title = playlist.title;
+        reducedPlaylist.tracks = [];
+        for (var i=0; i<playlist.tracks.length; i++) {
+            var track = playlist.tracks[i];
+            reducedPlaylist.tracks.push(track.track.permalink_url);
+        }
+        playlists.push(reducedPlaylist);
+    }
+    localStorage.setItem('playlists', JSON.stringify(playlists));
+};
+
+SlowCloud.prototype.load = function() {
+    var playlists = localStorage.getItem('playlists');
+    if (!playlists) {
+        return;
+    }
+    playlists = JSON.parse(playlists);
+    for (var i=0; i<playlists.length; i++) {
+        var reducedPlaylist = playlists[i];
+        var playlist = new Playlist(this, reducedPlaylist.title);
+        this.addPlaylist(playlist);
+        for (var i=0; i<reducedPlaylist.tracks.length; i++) {
+            playlist.addTrackFromURL(reducedPlaylist.tracks[i]);
+        }
+    }
 };
     
 
@@ -687,6 +723,8 @@ var TrackView = function(app) {
     $('#new-track').click(this.showTrackInput.bind(this));
     $('#new-track input[type="text"]').blur(this.hideTrackInput.bind(this));
     $('#new-track form').submit(this.onNewTrackSubmit.bind(this));
+
+    this.div.sortable({items: '.track'});
 };
 
 TrackView.prototype.show = function() {
@@ -717,7 +755,7 @@ TrackView.prototype.clear = function() {
 
 TrackView.prototype.set = function(playlist) {
     this.clear();
-    $('#tracks .subheading').text(playlist.title);
+    $('#tracks .subheader').text(playlist.title);
     for (var i=0; i<playlist.tracks.length; i++) {
         var track = playlist.tracks[i];
         this.addTrack(track);

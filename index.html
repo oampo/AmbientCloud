@@ -4,6 +4,7 @@
         <meta charset="utf-8" />
         <title>SlowCloud</title>
         <script src="http://code.jquery.com/jquery-1.7.1.min.js"></script>
+        <script src="http://ajax.googleapis.com/ajax/libs/jqueryui/1.8.17/jquery-ui.min.js"></script>
         <script src="http://connect.soundcloud.com/sdk.js"></script>
         <script src="js/compiled/SlowCloud.js"></script>
         <link rel="stylesheet" href="css/museo-sans/stylesheet.css" />
@@ -17,7 +18,6 @@
                     {{ title }}
                 </div>
                 <div class="controls">
-                    <button class="rename-playlist rename">R</button>
                     <button class="remove-playlist remove">X</button>
                 </div>
             </div>
@@ -29,8 +29,7 @@
                     {{ title }} by {{ artist }}
                 </div>
                 <div class="controls">
-                    <button class="up-track">U</button>
-                    <button class="down-track">D</button>
+                    <button class="play-track play">P</button>
                     <button class="remove-track remove">X</button>
                 </div>
             </div>

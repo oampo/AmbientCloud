@@ -7,6 +7,8 @@ var TrackView = function(app) {
     $('#new-track').click(this.showTrackInput.bind(this));
     $('#new-track input[type="text"]').blur(this.hideTrackInput.bind(this));
     $('#new-track form').submit(this.onNewTrackSubmit.bind(this));
+
+    this.div.sortable({items: '.track'});
 };
 
 TrackView.prototype.show = function() {
@@ -37,7 +39,7 @@ TrackView.prototype.clear = function() {
 
 TrackView.prototype.set = function(playlist) {
     this.clear();
-    $('#tracks .subheading').text(playlist.title);
+    $('#tracks .subheader').text(playlist.title);
     for (var i=0; i<playlist.tracks.length; i++) {
         var track = playlist.tracks[i];
         this.addTrack(track);
