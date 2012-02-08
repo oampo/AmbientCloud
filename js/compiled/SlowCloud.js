@@ -595,8 +595,8 @@ SlowCloud.prototype.load = function() {
         var reducedPlaylist = playlists[i];
         var playlist = new Playlist(this, reducedPlaylist.title);
         this.addPlaylist(playlist);
-        for (var i=0; i<reducedPlaylist.tracks.length; i++) {
-            playlist.addTrackFromURL(reducedPlaylist.tracks[i]);
+        for (var j=0; j<reducedPlaylist.tracks.length; j++) {
+            playlist.addTrackFromURL(reducedPlaylist.tracks[j]);
         }
     }
 };
@@ -639,12 +639,10 @@ Playlist.prototype.removeTrack = function(track) {
 };
 
 Playlist.prototype.moveTrack = function(oldIndex, newIndex) {
-    console.log(oldIndex, newIndex);
     var track = this.tracks.splice(oldIndex, 1)[0];
     this.tracks.splice(newIndex, 0, track);
     this.app.save();
 };
-
 var Track = function(app, track) {
     this.app = app;
     this.track = track;
@@ -782,7 +780,6 @@ TrackView.prototype.set = function(playlist) {
 };
 
 TrackView.prototype.onEnter = function(playlist) {
-    console.log("Play");
 };
 
 TrackView.prototype.onRemove = function(track) {

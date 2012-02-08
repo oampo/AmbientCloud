@@ -53,8 +53,8 @@ SlowCloud.prototype.load = function() {
         var reducedPlaylist = playlists[i];
         var playlist = new Playlist(this, reducedPlaylist.title);
         this.addPlaylist(playlist);
-        for (var i=0; i<reducedPlaylist.tracks.length; i++) {
-            playlist.addTrackFromURL(reducedPlaylist.tracks[i]);
+        for (var j=0; j<reducedPlaylist.tracks.length; j++) {
+            playlist.addTrackFromURL(reducedPlaylist.tracks[j]);
         }
     }
 };

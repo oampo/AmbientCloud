@@ -32,9 +32,7 @@ Playlist.prototype.removeTrack = function(track) {
 };
 
 Playlist.prototype.moveTrack = function(oldIndex, newIndex) {
-    console.log(oldIndex, newIndex);
     var track = this.tracks.splice(oldIndex, 1)[0];
     this.tracks.splice(newIndex, 0, track);
     this.app.save();
 };
-
