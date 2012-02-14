@@ -8434,9 +8434,11 @@ var Player = function(app) {
     this.audiolet = new Audiolet();
     this.player = new WebKitBufferPlayer(this.audiolet, this.next.bind(this));
     this.delay = new FeedbackDelay(this.audiolet, 5, 0.9);
-    this.reverb = new Reverb(this.audiolet, 1, 1, 0);
+    this.limiter = new Limiter(this.audiolet);
+    this.reverb = new Reverb(this.audiolet, 1, 0.9, 0.1);
     this.player.connect(this.delay);
-    this.delay.connect(this.reverb);
+    this.delay.connect(this.limiter);
+    this.limiter.connect(this.reverb);
     this.reverb.connect(this.audiolet.output);
 
     this.track = null;
