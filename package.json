@@ -2,11 +2,10 @@
   "scripts": {
     "start": "server.js"
   },
-  "version": "0.0.1-88",
+  "version": "0.0.1-90",
   "name": "ambientcloud",
   "subdomain": "ambientcloud",
   "dependencies": {
     "node-static": "*",
-    "request": "*"
   }
 }
