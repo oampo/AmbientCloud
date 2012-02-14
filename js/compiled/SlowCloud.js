@@ -7938,10 +7938,6 @@ SlowCloud.prototype.save = function() {
  * This basically carries out the reverse process to the save method,
  * recreating the playlists one by one, fetching the track data from the
  * SoundCloud servers, and adding it back to the playlists.
- *
- * FIXME: As playlist.addTrackFromURL is async after loading we may have tracks
- * in the wrong order.  We should sort each playlist after the last track has
- * loaded.
  */
 SlowCloud.prototype.load = function() {
     var playlists = localStorage.getItem('playlists');
@@ -8002,11 +7998,14 @@ Playlist.prototype.createElement = function() {
 /**
  * Adds a track to the playlist after retreiving the data info from SoundCloud.
  * Asynchronous.
- *
- * TODO: Should handle errors.
  */
 Playlist.prototype.addTrackFromURL = function(url, position) {
-    SC.get('/resolve', {url: url}, function(track) {
+    SC.get('/resolve', {url: url}, function(track, error) {
+        if (error) {
+            console.error(error.message);
+            return;
+        }
+
         if (position != null) {
             this.setTrack(track, position);
         }
