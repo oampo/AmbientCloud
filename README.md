@@ -10,16 +10,16 @@ Because it's a tremendous jumble of technology, and probably shouldn't be possib
 How it Works (a 10 step program)
 --------------------------------
 
-1) User adds a SoundCloud url to the playlist.
-2) SoundCloud JS SDK chats to SoundCloud, gets the track info.
-3) User decides to play the track.
-4) Request for SoundCloud stream url sent to Node.js proxy.
-5) SoundCloud redirects us around a bit, eventually chucks an MP3 back to Node.js...
-6) ...which chucks it back to the client.
-7) Track is decoded into a Web Audio API buffer.
-8) Web Audio API streams the decoded frames into Audiolet.
-9) Audiolet processes the audio in real-time...
-10) ...and passes it back to the Web Audio API, which plays it for the user.
+1. User adds a SoundCloud url to the playlist.
+2. SoundCloud JS SDK chats to SoundCloud, gets the track info.
+3. User decides to play the track.
+4. Request for SoundCloud stream url sent to Node.js proxy.
+5. SoundCloud redirects us around a bit, eventually chucks an MP3 back to Node.js...
+6. ...which chucks it back to the client.
+7. Track is decoded into a Web Audio API buffer.
+8. Web Audio API streams the decoded frames into Audiolet.
+9. Audiolet processes the audio in real-time...
+10. ...and passes it back to the Web Audio API, which plays it for the user.
 
 Caveats
 -------
