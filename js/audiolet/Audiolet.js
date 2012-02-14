@@ -4656,7 +4656,7 @@ var WebKitBufferPlayer = function(audiolet) {
 };
 extend(WebKitBufferPlayer, AudioletNode);
 
-WebKitBufferPlayer.prototype.load = function(url) {
+WebKitBufferPlayer.prototype.load = function(url, onLoad, onError) {
     if (!this.isWebKit) {
         return;
     }
@@ -4667,7 +4667,8 @@ WebKitBufferPlayer.prototype.load = function(url) {
     this.xhr = new XMLHttpRequest();
     this.xhr.open("GET", url, true);
     this.xhr.responseType = "arraybuffer";
-    this.xhr.onload = this.onLoad.bind(this);
+    this.xhr.onload = this.onLoad.bind(this, onLoad, onError);
+    this.xhr.onerror = onError;
     this.xhr.send();
 };
 
@@ -4692,11 +4693,13 @@ WebKitBufferPlayer.prototype.disconnectWebKitNodes = function() {
     }
 };
 
-WebKitBufferPlayer.prototype.onLoad = function() {
+WebKitBufferPlayer.prototype.onLoad = function(onLoad, onError) {
     // Load the buffer into memory for decoding
 //    this.fileBuffer = this.context.createBuffer(this.xhr.response, false);
-    this.context.decodeAudioData(this.xhr.response,
-                                                   this.onDecode.bind(this));
+    this.context.decodeAudioData(this.xhr.response, function(buffer) {
+        this.onDecode(buffer);
+        onLoad();
+    }.bind(this), onError);
 };
 
 WebKitBufferPlayer.prototype.onDecode = function(buffer) {
@@ -4745,13 +4748,7 @@ WebKitBufferPlayer.prototype.generate = function() {
 
     var numberOfChannels = output.samples.length;
     for (var i=0; i<numberOfChannels; i++) {
-        if (this.readPosition < this.buffers[i].length) {
-            output.samples[i] = this.buffers[i][this.readPosition];
-        }
-        else {
-            output.samples[i] = 0;
-            console.log("Finished?");
-        }
+        output.samples[i] = this.buffers[i][this.readPosition];
     }
     this.readPosition += 1;
 };

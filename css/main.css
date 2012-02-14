@@ -40,16 +40,27 @@ div.subheader, div.playlist, div.track, div.new, div.back {
     padding: 1em 1em 0 1em;
     border-bottom: 1px solid #000;
     font-size: 1.5em;
+    overflow: hidden;
 }
 
 div.controls {
-    width: 20%;
+    width: 5%;
     float: left;
     text-align: right;
 }
 
+div.spin {
+    float: left;
+    text-align: right;
+    width: 5%;
+}
+
+div.spin div {
+    top: -0.25em;
+}
+
 div.name {
-    width: 80%;
+    width: 90%;
     float: left;
 }
 
@@ -64,5 +75,9 @@ div.subheader {
 
 div.playlist, div.track, div.new, div.back {
     background-color: #FFFFFF;
+}
+
+div.now-playing {
+    background-color: #e3d9ff;
 }
 

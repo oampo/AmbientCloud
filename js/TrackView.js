@@ -25,6 +25,12 @@ var TrackView = function(app) {
         start: this.onSortStart.bind(this),
         stop: this.onSortStop.bind(this)
     });
+
+    this.spinner = new Spinner({
+        length: 10,
+        width: 1,
+        radius: 5
+    });
 };
 
 /**
@@ -81,6 +87,38 @@ TrackView.prototype.set = function(playlist) {
     for (var i=0; i<playlist.tracks.length; i++) {
         var track = playlist.tracks[i];
         this.addTrack(track);
+    }
+    this.setNowPlaying();
+    this.setLoading();
+};
+
+TrackView.prototype.unsetNowPlaying = function() {
+    $('.now-playing').removeClass('now-playing');
+};
+
+TrackView.prototype.setNowPlaying = function() {
+    this.unsetNowPlaying();
+    var playlist = this.app.player.playlist;
+    var track = this.app.player.track;
+    if (playlist && track && playlist == this.app.currentPlaylist) {
+        $('#' + track.id).addClass('now-playing');
+    }
+};
+
+TrackView.prototype.unsetLoading = function() {
+    if (this.spinner) {
+        this.spinner.stop();
+    }
+};
+
+TrackView.prototype.setLoading = function() {
+    this.unsetLoading();
+    var playlist = this.app.player.playlist;
+    var track = this.app.player.track;
+    var loading = this.app.player.loading;
+    if (loading && playlist && track && playlist == this.app.currentPlaylist) {
+        this.spinner.spin();
+        $('#' + track.id + ' .spin').append(this.spinner.el);
     }
 };
 

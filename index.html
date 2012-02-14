@@ -6,6 +6,7 @@
         <script src="http://code.jquery.com/jquery-1.7.1.min.js"></script>
         <script src="http://ajax.googleapis.com/ajax/libs/jqueryui/1.8.17/jquery-ui.min.js"></script>
         <script src="http://connect.soundcloud.com/sdk.js"></script>
+        <script src="http://fgnass.github.com/spin.js/spin.js"></script>
         <script src="js/compiled/SlowCloud.js"></script>
         <link rel="stylesheet" href="css/museo-sans/stylesheet.css" />
         <link rel="stylesheet" href="css/museo-slab/stylesheet.css" />
@@ -17,6 +18,9 @@
                 <div class="name">
                     {{ title }}
                 </div>
+                <div class="spin">
+                    &nbsp;
+                </div>
                 <div class="controls">
                     <button class="remove-playlist remove" title="Delete">X</button>
                 </div>
@@ -27,6 +31,9 @@
             <div class="track"  id="{{ id }}">
                 <div class="name">
                     {{ title }} by {{ artist }}
+                </div>
+                <div class="spin">
+                    &nbsp;
                 </div>
                 <div class="controls">
                     <button class="remove-track remove" title="Delete">X</button>

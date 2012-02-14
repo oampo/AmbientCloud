@@ -5198,7 +5198,7 @@ var WebKitBufferPlayer = function(audiolet) {
 };
 extend(WebKitBufferPlayer, AudioletNode);
 
-WebKitBufferPlayer.prototype.load = function(url) {
+WebKitBufferPlayer.prototype.load = function(url, onLoad, onError) {
     if (!this.isWebKit) {
         return;
     }
@@ -5209,7 +5209,8 @@ WebKitBufferPlayer.prototype.load = function(url) {
     this.xhr = new XMLHttpRequest();
     this.xhr.open("GET", url, true);
     this.xhr.responseType = "arraybuffer";
-    this.xhr.onload = this.onLoad.bind(this);
+    this.xhr.onload = this.onLoad.bind(this, onLoad, onError);
+    this.xhr.onerror = onError;
     this.xhr.send();
 };
 
@@ -5234,11 +5235,13 @@ WebKitBufferPlayer.prototype.disconnectWebKitNodes = function() {
     }
 };
 
-WebKitBufferPlayer.prototype.onLoad = function() {
+WebKitBufferPlayer.prototype.onLoad = function(onLoad, onError) {
     // Load the buffer into memory for decoding
 //    this.fileBuffer = this.context.createBuffer(this.xhr.response, false);
-    this.context.decodeAudioData(this.xhr.response,
-                                                   this.onDecode.bind(this));
+    this.context.decodeAudioData(this.xhr.response, function(buffer) {
+        this.onDecode(buffer);
+        onLoad();
+    }.bind(this), onError);
 };
 
 WebKitBufferPlayer.prototype.onDecode = function(buffer) {
@@ -5287,13 +5290,7 @@ WebKitBufferPlayer.prototype.generate = function() {
 
     var numberOfChannels = output.samples.length;
     for (var i=0; i<numberOfChannels; i++) {
-        if (this.readPosition < this.buffers[i].length) {
-            output.samples[i] = this.buffers[i][this.readPosition];
-        }
-        else {
-            output.samples[i] = 0;
-            console.log("Finished?");
-        }
+        output.samples[i] = this.buffers[i][this.readPosition];
     }
     this.readPosition += 1;
 };
@@ -8195,6 +8192,12 @@ var TrackView = function(app) {
         start: this.onSortStart.bind(this),
         stop: this.onSortStop.bind(this)
     });
+
+    this.spinner = new Spinner({
+        length: 10,
+        width: 1,
+        radius: 5
+    });
 };
 
 /**
@@ -8251,6 +8254,38 @@ TrackView.prototype.set = function(playlist) {
     for (var i=0; i<playlist.tracks.length; i++) {
         var track = playlist.tracks[i];
         this.addTrack(track);
+    }
+    this.setNowPlaying();
+    this.setLoading();
+};
+
+TrackView.prototype.unsetNowPlaying = function() {
+    $('.now-playing').removeClass('now-playing');
+};
+
+TrackView.prototype.setNowPlaying = function() {
+    this.unsetNowPlaying();
+    var playlist = this.app.player.playlist;
+    var track = this.app.player.track;
+    if (playlist && track && playlist == this.app.currentPlaylist) {
+        $('#' + track.id).addClass('now-playing');
+    }
+};
+
+TrackView.prototype.unsetLoading = function() {
+    if (this.spinner) {
+        this.spinner.stop();
+    }
+};
+
+TrackView.prototype.setLoading = function() {
+    this.unsetLoading();
+    var playlist = this.app.player.playlist;
+    var track = this.app.player.track;
+    var loading = this.app.player.loading;
+    if (loading && playlist && track && playlist == this.app.currentPlaylist) {
+        this.spinner.spin();
+        $('#' + track.id + ' .spin').append(this.spinner.el);
     }
 };
 
@@ -8340,6 +8375,8 @@ function uid() {
 }
 var Player = function(app) {
     this.app = app;
+
+    // DSP chain
     this.audiolet = new Audiolet();
     this.player = new WebKitBufferPlayer(this.audiolet);
     this.delay = new FeedbackDelay(this.audiolet, 5, 0.9);
@@ -8347,11 +8384,48 @@ var Player = function(app) {
     this.player.connect(this.delay);
     this.delay.connect(this.reverb);
     this.reverb.connect(this.audiolet.output);
+
+    this.track = null;
+    this.playlist = null;
+    this.loading = false;
 };
 
 Player.prototype.play = function(track) {
     if (track.track.stream_url) {
         var url = '/proxy?url=' + track.track.stream_url;
-        this.player.load(url);
+        this.player.load(url, this.onLoad.bind(this), this.onError.bind(this));
+
+        this.track = track;
+        this.playlist = this.app.currentPlaylist;
+        this.loading = true;
+
+        this.app.trackView.setNowPlaying();
+        this.app.trackView.setLoading();
     }
+    else {
+        this.next();
+    }
+};
+
+Player.prototype.next = function() {
+    var currentPosition = this.playlist.tracks.indexOf(this.track);
+    if (currentPosition < this.playlist.tracks.length - 1) {
+        this.play(this.playlist.tracks[currentPosition + 1]);
+    }
+    else {
+        this.track = null;
+        this.playlist = null;
+        this.loading = false;
+        this.app.trackView.unsetNowPlaying();
+        this.app.trackView.unsetLoading();
+    }
+};
+
+Player.prototype.onLoad = function() {
+    this.app.trackView.unsetLoading();
+    this.loading = false;
+};
+
+Player.prototype.onError = function() {
+    this.next();
 };
