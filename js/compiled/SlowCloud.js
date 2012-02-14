@@ -5174,8 +5174,9 @@ UpMixer.prototype.toString = function() {
 };
 
 
-var WebKitBufferPlayer = function(audiolet) {
+var WebKitBufferPlayer = function(audiolet, onComplete) {
     AudioletNode.call(this, audiolet, 0, 1);
+    this.onComplete = onComplete;
     this.isWebKit = this.audiolet.device.sink instanceof Sink.sinks.webkit;
     this.ready = false;
 
@@ -5195,6 +5196,8 @@ var WebKitBufferPlayer = function(audiolet) {
 
     this.buffers = [];
     this.readPosition = 0;
+
+    this.endTime = null;
 };
 extend(WebKitBufferPlayer, AudioletNode);
 
@@ -5220,6 +5223,7 @@ WebKitBufferPlayer.prototype.stop = function() {
 
     this.buffers = [];
     this.readPosition = 0;
+    this.endTime = null;
 
     this.setNumberOfOutputChannels(0);
    
@@ -5264,6 +5268,7 @@ WebKitBufferPlayer.prototype.onDecode = function(buffer) {
     this.source.connect(this.jsNode);
     this.jsNode.connect(this.context.destination);
     this.source.noteOn(0);
+    this.endTime = this.context.currentTime + this.fileBuffer.duration;
 
     this.loaded = true;
 };
@@ -5293,6 +5298,11 @@ WebKitBufferPlayer.prototype.generate = function() {
         output.samples[i] = this.buffers[i][this.readPosition];
     }
     this.readPosition += 1;
+
+    if (this.context.currentTime > this.endTime) {
+        this.stop();
+        this.onComplete();
+    }
 };
 
 /*!
@@ -8382,7 +8392,7 @@ var Player = function(app) {
 
     // DSP chain
     this.audiolet = new Audiolet();
-    this.player = new WebKitBufferPlayer(this.audiolet);
+    this.player = new WebKitBufferPlayer(this.audiolet, this.next.bind(this));
     this.delay = new FeedbackDelay(this.audiolet, 5, 0.9);
     this.reverb = new Reverb(this.audiolet, 1, 1, 0);
     this.player.connect(this.delay);
@@ -8411,18 +8421,24 @@ Player.prototype.play = function(track) {
     }
 };
 
+Player.prototype.stop = function() {
+    this.player.stop();
+    this.track = null;
+    this.playlist = null;
+    this.loading = false;
+    this.app.trackView.unsetNowPlaying();
+    this.app.trackView.unsetLoading();
+};
+
 Player.prototype.next = function() {
     var currentPosition = this.playlist.tracks.indexOf(this.track);
-    if (currentPosition < this.playlist.tracks.length - 1) {
-        this.play(this.playlist.tracks[currentPosition + 1]);
+    if (currentPosition == -1 ||
+        currentPosition >= this.playlist.tracks.length - 1) {
+        this.stop();
+        return;
     }
-    else {
-        this.track = null;
-        this.playlist = null;
-        this.loading = false;
-        this.app.trackView.unsetNowPlaying();
-        this.app.trackView.unsetLoading();
-    }
+
+    this.play(this.playlist.tracks[currentPosition + 1]);
 };
 
 Player.prototype.onLoad = function() {

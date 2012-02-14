@@ -4632,8 +4632,9 @@ UpMixer.prototype.toString = function() {
 };
 
 
-var WebKitBufferPlayer = function(audiolet) {
+var WebKitBufferPlayer = function(audiolet, onComplete) {
     AudioletNode.call(this, audiolet, 0, 1);
+    this.onComplete = onComplete;
     this.isWebKit = this.audiolet.device.sink instanceof Sink.sinks.webkit;
     this.ready = false;
 
@@ -4653,6 +4654,8 @@ var WebKitBufferPlayer = function(audiolet) {
 
     this.buffers = [];
     this.readPosition = 0;
+
+    this.endTime = null;
 };
 extend(WebKitBufferPlayer, AudioletNode);
 
@@ -4678,6 +4681,7 @@ WebKitBufferPlayer.prototype.stop = function() {
 
     this.buffers = [];
     this.readPosition = 0;
+    this.endTime = null;
 
     this.setNumberOfOutputChannels(0);
    
@@ -4722,6 +4726,7 @@ WebKitBufferPlayer.prototype.onDecode = function(buffer) {
     this.source.connect(this.jsNode);
     this.jsNode.connect(this.context.destination);
     this.source.noteOn(0);
+    this.endTime = this.context.currentTime + this.fileBuffer.duration;
 
     this.loaded = true;
 };
@@ -4751,6 +4756,11 @@ WebKitBufferPlayer.prototype.generate = function() {
         output.samples[i] = this.buffers[i][this.readPosition];
     }
     this.readPosition += 1;
+
+    if (this.context.currentTime > this.endTime) {
+        this.stop();
+        this.onComplete();
+    }
 };
 
 /*!

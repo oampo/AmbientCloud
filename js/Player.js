@@ -3,7 +3,7 @@ var Player = function(app) {
 
     // DSP chain
     this.audiolet = new Audiolet();
-    this.player = new WebKitBufferPlayer(this.audiolet);
+    this.player = new WebKitBufferPlayer(this.audiolet, this.next.bind(this));
     this.delay = new FeedbackDelay(this.audiolet, 5, 0.9);
     this.reverb = new Reverb(this.audiolet, 1, 1, 0);
     this.player.connect(this.delay);
@@ -32,18 +32,24 @@ Player.prototype.play = function(track) {
     }
 };
 
+Player.prototype.stop = function() {
+    this.player.stop();
+    this.track = null;
+    this.playlist = null;
+    this.loading = false;
+    this.app.trackView.unsetNowPlaying();
+    this.app.trackView.unsetLoading();
+};
+
 Player.prototype.next = function() {
     var currentPosition = this.playlist.tracks.indexOf(this.track);
-    if (currentPosition < this.playlist.tracks.length - 1) {
-        this.play(this.playlist.tracks[currentPosition + 1]);
+    if (currentPosition == -1 ||
+        currentPosition >= this.playlist.tracks.length - 1) {
+        this.stop();
+        return;
     }
-    else {
-        this.track = null;
-        this.playlist = null;
-        this.loading = false;
-        this.app.trackView.unsetNowPlaying();
-        this.app.trackView.unsetLoading();
-    }
+
+    this.play(this.playlist.tracks[currentPosition + 1]);
 };
 
 Player.prototype.onLoad = function() {
