@@ -92,10 +92,17 @@ TrackView.prototype.set = function(playlist) {
     this.setLoading();
 };
 
+/**
+ * Remove the now playing indicator from the playing track.
+ */
 TrackView.prototype.unsetNowPlaying = function() {
     $('.now-playing').removeClass('now-playing');
 };
 
+/**
+ * Adds the now playing indicator to the playing track.  Remove any existing
+ * indicator, as only one track can play at once
+ */
 TrackView.prototype.setNowPlaying = function() {
     this.unsetNowPlaying();
     var playlist = this.app.player.playlist;
@@ -105,11 +112,19 @@ TrackView.prototype.setNowPlaying = function() {
     }
 };
 
+/**
+ * Remove the loading indicator from the loading track
+ */
 TrackView.prototype.unsetLoading = function() {
     if (this.spinner) {
         this.spinner.stop();
     }
 };
+
+/**
+ * Adds the loading indicator to the currently loading track.  Remove any
+ * existing indicator, as only one track can be loading at once
+ */
 
 TrackView.prototype.setLoading = function() {
     this.unsetLoading();
@@ -194,4 +209,4 @@ TrackView.prototype.onNewTrackSubmit = function() {
     this.app.currentPlaylist.addTrackFromURL($("#new-track input").val());
     this.hideTrackInput();
     return false;
-};
+}
