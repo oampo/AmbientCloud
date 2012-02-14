@@ -7956,7 +7956,7 @@ SlowCloud.prototype.load = function() {
         var playlist = new Playlist(this, reducedPlaylist.title);
         this.addPlaylist(playlist);
         for (var j=0; j<reducedPlaylist.tracks.length; j++) {
-            playlist.addTrackFromURL(reducedPlaylist.tracks[j]);
+            playlist.addTrackFromURL(reducedPlaylist.tracks[j], j);
         }
     }
 };
@@ -8005,18 +8005,38 @@ Playlist.prototype.createElement = function() {
  *
  * TODO: Should handle errors.
  */
-Playlist.prototype.addTrackFromURL = function(url) {
-    SC.get('/resolve', {url: url}, this.addTrack.bind(this));
+Playlist.prototype.addTrackFromURL = function(url, position) {
+    SC.get('/resolve', {url: url}, function(track) {
+        if (position != null) {
+            this.setTrack(track, position);
+        }
+        else {
+            this.addTrack(track);
+        }
+    }.bind(this));
 };
 
 /**
- * Add a track to the playlist, force a UI update, and store the current state.
+ * Add a track to the playlist and force a UI update
  */
 Playlist.prototype.addTrack = function(track) {
     var track = new Track(this.app, track);
     this.tracks.push(track);
     this.app.trackView.addTrack(track);
 };
+
+/**
+ * Add a track to the playlist at a fixed position and force a UI update if
+ * necessary
+ */
+Playlist.prototype.setTrack = function(track, position) {
+    var track = new Track(this.app, track);
+    this.tracks[position] = track;
+    if (this.app.currentPlaylist == this) {
+         this.app.trackView.set(this);
+    }
+};
+
 
 /**
  * Remove a track from the playlist, force a UI update, and store the current
@@ -8267,16 +8287,25 @@ TrackView.prototype.set = function(playlist) {
     $('#tracks .subheader').text(playlist.title);
     for (var i=0; i<playlist.tracks.length; i++) {
         var track = playlist.tracks[i];
-        this.addTrack(track);
+        if (track) {
+            this.addTrack(track);
+        }
     }
     this.setNowPlaying();
     this.setLoading();
 };
 
+/**
+ * Remove the now playing indicator from the playing track.
+ */
 TrackView.prototype.unsetNowPlaying = function() {
     $('.now-playing').removeClass('now-playing');
 };
 
+/**
+ * Adds the now playing indicator to the playing track.  Remove any existing
+ * indicator, as only one track can play at once
+ */
 TrackView.prototype.setNowPlaying = function() {
     this.unsetNowPlaying();
     var playlist = this.app.player.playlist;
@@ -8286,11 +8315,19 @@ TrackView.prototype.setNowPlaying = function() {
     }
 };
 
+/**
+ * Remove the loading indicator from the loading track
+ */
 TrackView.prototype.unsetLoading = function() {
     if (this.spinner) {
         this.spinner.stop();
     }
 };
+
+/**
+ * Adds the loading indicator to the currently loading track.  Remove any
+ * existing indicator, as only one track can be loading at once
+ */
 
 TrackView.prototype.setLoading = function() {
     this.unsetLoading();
@@ -8375,7 +8412,7 @@ TrackView.prototype.onNewTrackSubmit = function() {
     this.app.currentPlaylist.addTrackFromURL($("#new-track input").val());
     this.hideTrackInput();
     return false;
-};
+}
 // Global UID counter.
 window.UID = 0;
 
@@ -8387,6 +8424,10 @@ function uid() {
     window.UID += 1;
     return window.UID;
 }
+/**
+ * Track player.  Handles loading tracks from SoundCloud, and playing them
+ * through interesting effects.
+ */
 var Player = function(app) {
     this.app = app;
 
@@ -8404,8 +8445,15 @@ var Player = function(app) {
     this.loading = false;
 };
 
+/**
+ * Attempt to load a track and play it.  Updates the track view with loading
+ * and playing indicators.
+ */
 Player.prototype.play = function(track) {
     if (track.track.stream_url) {
+        // Load the track from our Node.js proxy, rather than straight from
+        // SoundCloud because of
+        // http://code.google.com/p/chromium/issues/detail?id=96136
         var url = '/proxy?url=' + track.track.stream_url;
         this.player.load(url, this.onLoad.bind(this), this.onError.bind(this));
 
@@ -8413,14 +8461,19 @@ Player.prototype.play = function(track) {
         this.playlist = this.app.currentPlaylist;
         this.loading = true;
 
+        // Update the track view
         this.app.trackView.setNowPlaying();
         this.app.trackView.setLoading();
     }
     else {
+        // Track is not streamable, so just skip to the next one
         this.next();
     }
 };
 
+/**
+ * Stop the player, and update the track view to reflect this.
+ */
 Player.prototype.stop = function() {
     this.player.stop();
     this.track = null;
@@ -8430,6 +8483,10 @@ Player.prototype.stop = function() {
     this.app.trackView.unsetLoading();
 };
 
+/**
+ * Skip to the next track in the current playlist, or stop if there is no
+ * next track.
+ */
 Player.prototype.next = function() {
     var currentPosition = this.playlist.tracks.indexOf(this.track);
     if (currentPosition == -1 ||
@@ -8441,11 +8498,19 @@ Player.prototype.next = function() {
     this.play(this.playlist.tracks[currentPosition + 1]);
 };
 
+/**
+ * Callback if a track loads successfully.  Updates the track view to reflect
+ * that we are no longer loading
+ */
 Player.prototype.onLoad = function() {
     this.app.trackView.unsetLoading();
     this.loading = false;
 };
 
+/**
+ * Callback if a track does not load succesfully (either due to a decoding
+ * error, or a failed request).  Skips to the next track.
+ */
 Player.prototype.onError = function() {
     this.next();
 };

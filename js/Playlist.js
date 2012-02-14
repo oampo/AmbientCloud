@@ -27,18 +27,38 @@ Playlist.prototype.createElement = function() {
  *
  * TODO: Should handle errors.
  */
-Playlist.prototype.addTrackFromURL = function(url) {
-    SC.get('/resolve', {url: url}, this.addTrack.bind(this));
+Playlist.prototype.addTrackFromURL = function(url, position) {
+    SC.get('/resolve', {url: url}, function(track) {
+        if (position != null) {
+            this.setTrack(track, position);
+        }
+        else {
+            this.addTrack(track);
+        }
+    }.bind(this));
 };
 
 /**
- * Add a track to the playlist, force a UI update, and store the current state.
+ * Add a track to the playlist and force a UI update
  */
 Playlist.prototype.addTrack = function(track) {
     var track = new Track(this.app, track);
     this.tracks.push(track);
     this.app.trackView.addTrack(track);
 };
+
+/**
+ * Add a track to the playlist at a fixed position and force a UI update if
+ * necessary
+ */
+Playlist.prototype.setTrack = function(track, position) {
+    var track = new Track(this.app, track);
+    this.tracks[position] = track;
+    if (this.app.currentPlaylist == this) {
+         this.app.trackView.set(this);
+    }
+};
+
 
 /**
  * Remove a track from the playlist, force a UI update, and store the current

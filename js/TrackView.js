@@ -86,7 +86,9 @@ TrackView.prototype.set = function(playlist) {
     $('#tracks .subheader').text(playlist.title);
     for (var i=0; i<playlist.tracks.length; i++) {
         var track = playlist.tracks[i];
-        this.addTrack(track);
+        if (track) {
+            this.addTrack(track);
+        }
     }
     this.setNowPlaying();
     this.setLoading();
