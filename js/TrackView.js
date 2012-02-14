@@ -87,7 +87,8 @@ TrackView.prototype.set = function(playlist) {
 /**
  * Set the track playing.  Called when a track is clicked.
  */
-TrackView.prototype.onEnter = function(playlist) {
+TrackView.prototype.onEnter = function(track) {
+    this.app.player.play(track);
 };
 
 

@@ -2,13 +2,17 @@
  * Main app class.
  */
 var SlowCloud = function() {
+    this.clientID = '382b4cea1549fc6ed4682acaf0e0fe65';
     SC.initialize({
-        client_id: '382b4cea1549fc6ed4682acaf0e0fe65',
+        client_id: this.clientID,
     });
 
     this.playlists = [];
     // If we are in the track view, this holds the playlist we are looking at.
     this.currentPlaylist = null;
+
+    // Create the player
+    this.player = new Player(this);
 
     // Create the UI views
     this.playlistView = new PlaylistView(this);
