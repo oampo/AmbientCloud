@@ -41,6 +41,7 @@ div.subheader, div.playlist, div.track, div.new, div.back {
     border-bottom: 1px solid #000;
     font-size: 1.5em;
     overflow: hidden;
+    white-space: nowrap;
 }
 
 div.controls {
