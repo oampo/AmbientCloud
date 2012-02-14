@@ -94,9 +94,9 @@ PlaylistView.prototype.showPlaylistInput = function() {
  * Called when the input loses focus.
  */
 PlaylistView.prototype.hidePlaylistInput = function() {
-    $("#new-playlist .label").slideDown();
-    $("#new-playlist .input").slideUp();
-    $("#new-playlist input").val("");
+    $('#new-playlist .label').slideDown();
+    $('#new-playlist .input').slideUp();
+    $('#new-playlist input').val('');
 
 };
 
@@ -105,7 +105,7 @@ PlaylistView.prototype.hidePlaylistInput = function() {
  * using the name we entered, and enters the track view for the new playlist.
  */
 PlaylistView.prototype.onNewPlaylistSubmit = function() {
-    var playlist = new Playlist(app, $("#new-playlist input").val());
+    var playlist = new Playlist(app, $('#new-playlist input').val());
     this.app.addPlaylist(playlist);
     // Show the "New Playlist" label, for when we return to the playlist view
     this.hidePlaylistInput();

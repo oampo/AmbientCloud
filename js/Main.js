@@ -4,7 +4,7 @@
 var SlowCloud = function() {
     this.clientID = '382b4cea1549fc6ed4682acaf0e0fe65';
     SC.initialize({
-        client_id: this.clientID,
+        client_id: this.clientID
     });
 
     this.playlists = [];
@@ -51,12 +51,12 @@ SlowCloud.prototype.removePlaylist = function(playlist) {
 SlowCloud.prototype.save = function() {
     // Create the simplified version of the playlist data
     var playlists = [];
-    for (var i=0; i<this.playlists.length; i++) {
+    for (var i = 0; i < this.playlists.length; i++) {
         var playlist = this.playlists[i]; // The complete playlist info
         var reducedPlaylist = {}; // The reduced version of the playlist info
         reducedPlaylist.title = playlist.title;
         reducedPlaylist.tracks = [];
-        for (var j=0; j<playlist.tracks.length; j++) {
+        for (var j = 0; j < playlist.tracks.length; j++) {
             var track = playlist.tracks[j];
             reducedPlaylist.tracks.push(track.track.permalink_url);
         }
@@ -79,17 +79,17 @@ SlowCloud.prototype.load = function() {
         return;
     }
     playlists = JSON.parse(playlists);
-    for (var i=0; i<playlists.length; i++) {
+    for (var i = 0; i < playlists.length; i++) {
         // Recreate the playlists from the removed data.
         var reducedPlaylist = playlists[i];
         var playlist = new Playlist(this, reducedPlaylist.title);
         this.addPlaylist(playlist);
-        for (var j=0; j<reducedPlaylist.tracks.length; j++) {
+        for (var j = 0; j < reducedPlaylist.tracks.length; j++) {
             playlist.addTrackFromURL(reducedPlaylist.tracks[j], j);
         }
     }
 };
-    
+
 /**
  * Start the app when the dom has finished loading.
  *
@@ -97,11 +97,11 @@ SlowCloud.prototype.load = function() {
  */
 window.onload = function() {
     window.app = new SlowCloud();
-}
+};
 
 /**
  * Save our app status on unload
  */
 window.onunload = function() {
     window.app.save();
-}
+};

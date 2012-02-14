@@ -7871,7 +7871,7 @@ proto.getSyncWriteOffset = function () {
 var SlowCloud = function() {
     this.clientID = '382b4cea1549fc6ed4682acaf0e0fe65';
     SC.initialize({
-        client_id: this.clientID,
+        client_id: this.clientID
     });
 
     this.playlists = [];
@@ -7918,12 +7918,12 @@ SlowCloud.prototype.removePlaylist = function(playlist) {
 SlowCloud.prototype.save = function() {
     // Create the simplified version of the playlist data
     var playlists = [];
-    for (var i=0; i<this.playlists.length; i++) {
+    for (var i = 0; i < this.playlists.length; i++) {
         var playlist = this.playlists[i]; // The complete playlist info
         var reducedPlaylist = {}; // The reduced version of the playlist info
         reducedPlaylist.title = playlist.title;
         reducedPlaylist.tracks = [];
-        for (var j=0; j<playlist.tracks.length; j++) {
+        for (var j = 0; j < playlist.tracks.length; j++) {
             var track = playlist.tracks[j];
             reducedPlaylist.tracks.push(track.track.permalink_url);
         }
@@ -7946,17 +7946,17 @@ SlowCloud.prototype.load = function() {
         return;
     }
     playlists = JSON.parse(playlists);
-    for (var i=0; i<playlists.length; i++) {
+    for (var i = 0; i < playlists.length; i++) {
         // Recreate the playlists from the removed data.
         var reducedPlaylist = playlists[i];
         var playlist = new Playlist(this, reducedPlaylist.title);
         this.addPlaylist(playlist);
-        for (var j=0; j<reducedPlaylist.tracks.length; j++) {
+        for (var j = 0; j < reducedPlaylist.tracks.length; j++) {
             playlist.addTrackFromURL(reducedPlaylist.tracks[j], j);
         }
     }
 };
-    
+
 /**
  * Start the app when the dom has finished loading.
  *
@@ -7964,14 +7964,14 @@ SlowCloud.prototype.load = function() {
  */
 window.onload = function() {
     window.app = new SlowCloud();
-}
+};
 
 /**
  * Save our app status on unload
  */
 window.onunload = function() {
     window.app.save();
-}
+};
 /**
  * A single playlist which stores a list of tracks.
  */
@@ -8178,9 +8178,9 @@ PlaylistView.prototype.showPlaylistInput = function() {
  * Called when the input loses focus.
  */
 PlaylistView.prototype.hidePlaylistInput = function() {
-    $("#new-playlist .label").slideDown();
-    $("#new-playlist .input").slideUp();
-    $("#new-playlist input").val("");
+    $('#new-playlist .label').slideDown();
+    $('#new-playlist .input').slideUp();
+    $('#new-playlist input').val('');
 
 };
 
@@ -8189,7 +8189,7 @@ PlaylistView.prototype.hidePlaylistInput = function() {
  * using the name we entered, and enters the track view for the new playlist.
  */
 PlaylistView.prototype.onNewPlaylistSubmit = function() {
-    var playlist = new Playlist(app, $("#new-playlist input").val());
+    var playlist = new Playlist(app, $('#new-playlist input').val());
     this.app.addPlaylist(playlist);
     // Show the "New Playlist" label, for when we return to the playlist view
     this.hidePlaylistInput();
@@ -8253,7 +8253,7 @@ TrackView.prototype.hide = function() {
 TrackView.prototype.addTrack = function(track) {
     var element = track.createElement();
     // Insert the element at the end, but before the New Track button
-    $("#new-track").before(element);
+    $('#new-track').before(element);
 
     // Click listeners
     $(element).click(this.onEnter.bind(this, track));
@@ -8284,7 +8284,7 @@ TrackView.prototype.clear = function() {
 TrackView.prototype.set = function(playlist) {
     this.clear();
     $('#tracks .subheader').text(playlist.title);
-    for (var i=0; i<playlist.tracks.length; i++) {
+    for (var i = 0; i < playlist.tracks.length; i++) {
         var track = playlist.tracks[i];
         if (track) {
             this.addTrack(track);
@@ -8398,9 +8398,9 @@ TrackView.prototype.showTrackInput = function() {
  * the input loses focus.
  */
 TrackView.prototype.hideTrackInput = function() {
-    $("#new-track .label").slideDown();
-    $("#new-track .input").slideUp();
-    $("#new-track input").val("");
+    $('#new-track .label').slideDown();
+    $('#new-track .input').slideUp();
+    $('#new-track input').val('');
 };
 
 /**
@@ -8408,15 +8408,15 @@ TrackView.prototype.hideTrackInput = function() {
  * from SoundCloud, and adds it to the playlist.
  */
 TrackView.prototype.onNewTrackSubmit = function() {
-    this.app.currentPlaylist.addTrackFromURL($("#new-track input").val());
+    this.app.currentPlaylist.addTrackFromURL($('#new-track input').val());
     this.hideTrackInput();
     return false;
-}
+};
 // Global UID counter.
 window.UID = 0;
 
 /**
- * Return a unique ID based upon a simple global counter.  Pretty ugly.  
+ * Return a unique ID based upon a simple global counter.  Pretty ugly.
  * Something like a UUID would be nicer.
  */
 function uid() {

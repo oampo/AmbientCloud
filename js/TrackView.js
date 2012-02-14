@@ -53,7 +53,7 @@ TrackView.prototype.hide = function() {
 TrackView.prototype.addTrack = function(track) {
     var element = track.createElement();
     // Insert the element at the end, but before the New Track button
-    $("#new-track").before(element);
+    $('#new-track').before(element);
 
     // Click listeners
     $(element).click(this.onEnter.bind(this, track));
@@ -84,7 +84,7 @@ TrackView.prototype.clear = function() {
 TrackView.prototype.set = function(playlist) {
     this.clear();
     $('#tracks .subheader').text(playlist.title);
-    for (var i=0; i<playlist.tracks.length; i++) {
+    for (var i = 0; i < playlist.tracks.length; i++) {
         var track = playlist.tracks[i];
         if (track) {
             this.addTrack(track);
@@ -198,9 +198,9 @@ TrackView.prototype.showTrackInput = function() {
  * the input loses focus.
  */
 TrackView.prototype.hideTrackInput = function() {
-    $("#new-track .label").slideDown();
-    $("#new-track .input").slideUp();
-    $("#new-track input").val("");
+    $('#new-track .label').slideDown();
+    $('#new-track .input').slideUp();
+    $('#new-track input').val('');
 };
 
 /**
@@ -208,7 +208,7 @@ TrackView.prototype.hideTrackInput = function() {
  * from SoundCloud, and adds it to the playlist.
  */
 TrackView.prototype.onNewTrackSubmit = function() {
-    this.app.currentPlaylist.addTrackFromURL($("#new-track input").val());
+    this.app.currentPlaylist.addTrackFromURL($('#new-track input').val());
     this.hideTrackInput();
     return false;
-}
+};
