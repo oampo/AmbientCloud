@@ -2,10 +2,11 @@
   "scripts": {
     "start": "server.js"
   },
-  "version": "0.0.1-83",
-  "name": "slooowcloud",
-  "subdomain": "slooowcloud",
+  "version": "0.0.1-84",
+  "name": "ambientcloud",
+  "subdomain": "ambientcloud",
   "dependencies": {
-    "node-static": "*"
+    "node-static": "*",
+    "request": "*"
   }
 }
