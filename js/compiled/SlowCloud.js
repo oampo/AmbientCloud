@@ -7959,6 +7959,13 @@ SlowCloud.prototype.load = function() {
 window.onload = function() {
     window.app = new SlowCloud();
 }
+
+/**
+ * Save our app status on unload
+ */
+window.onunload = function() {
+    window.app.save();
+}
 /**
  * A single playlist which stores a list of tracks.
  */
@@ -7999,7 +8006,6 @@ Playlist.prototype.addTrack = function(track) {
     var track = new Track(this.app, track);
     this.tracks.push(track);
     this.app.trackView.addTrack(track);
-    this.app.save();
 };
 
 /**
@@ -8010,7 +8016,6 @@ Playlist.prototype.removeTrack = function(track) {
     var index = this.tracks.indexOf(track);
     this.tracks.splice(index, 1);
     this.app.trackView.removeTrack(track);
-    this.app.save();
 };
 
 /**
@@ -8021,7 +8026,6 @@ Playlist.prototype.removeTrack = function(track) {
 Playlist.prototype.moveTrack = function(oldIndex, newIndex) {
     var track = this.tracks.splice(oldIndex, 1)[0];
     this.tracks.splice(newIndex, 0, track);
-    this.app.save();
 };
 /**
  * A single track.  Most of the data is stored in the this.track member, which

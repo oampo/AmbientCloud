@@ -102,3 +102,10 @@ SlowCloud.prototype.load = function() {
 window.onload = function() {
     window.app = new SlowCloud();
 }
+
+/**
+ * Save our app status on unload
+ */
+window.onunload = function() {
+    window.app.save();
+}
