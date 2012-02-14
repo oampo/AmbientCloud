@@ -26,5 +26,5 @@ Caveats
 * Chrome only for now 'cause Firefox won't load .mp3s, and the mobile browsers don't support the Web Audio API.
 * Loading tracks is slow as hell.  MediaElementAudioSourceNode isn't implemented yet, so we can't stream the tracks but have to get the whole thing in an XHR.  Fine, except http://code.google.com/p/chromium/issues/detail?id=96136 means that we have to proxy the tracks first.  Sheesh...
 * Spent a bit longer than the time limit, as getting SoundCloud to play nicely with the Web Audio API and Audiolet was "interesting".  Sorry :(
-* No tags.  Spent too much time futzing around with audio.  More apologies.
+* No tags or playlist descriptions yet.  Spent too much time futzing around with audio.  More apologies.
 
